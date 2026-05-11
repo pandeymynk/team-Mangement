@@ -26,6 +26,7 @@ export default function IssueCard({
   showStatus = false,
   onDelete = () => {},
   onUpdate = () => {},
+  orgId,
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
@@ -77,6 +78,7 @@ export default function IssueCard({
           onDelete={onDeleteHandler}
           onUpdate={onUpdateHandler}
           borderCol={priorityColor[issue.priority]}
+          orgId={orgId}
         />
       )}
     </>

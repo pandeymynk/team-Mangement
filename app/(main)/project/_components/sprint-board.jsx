@@ -26,7 +26,7 @@ function reorder(list, startIndex, endIndex) {
 
 export default function SprintBoard({ sprints, projectId, orgId }) {
   const [currentSprint, setCurrentSprint] = useState(
-    sprints.find((spr) => spr.status === "ACTIVE") || sprints[0]
+    sprints.find((spr) => spr.status === "ACTIVE") || sprints[0],
   );
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -48,7 +48,7 @@ export default function SprintBoard({ sprints, projectId, orgId }) {
 
   useEffect(() => {
     if (currentSprint.id) {
-      fetchIssues(currentSprint.id);
+      fetchIssues(currentSprint.id, orgId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSprint.id]);
@@ -59,7 +59,7 @@ export default function SprintBoard({ sprints, projectId, orgId }) {
   };
 
   const handleIssueCreated = () => {
-    fetchIssues(currentSprint.id);
+    fetchIssues(currentSprint.id, orgId);
   };
 
   const {
@@ -94,18 +94,18 @@ export default function SprintBoard({ sprints, projectId, orgId }) {
 
     // source and destination list
     const sourceList = newOrderedData.filter(
-      (list) => list.status === source.droppableId
+      (list) => list.status === source.droppableId,
     );
 
     const destinationList = newOrderedData.filter(
-      (list) => list.status === destination.droppableId
+      (list) => list.status === destination.droppableId,
     );
 
     if (source.droppableId === destination.droppableId) {
       const reorderedCards = reorder(
         sourceList,
         source.index,
-        destination.index
+        destination.index,
       );
 
       reorderedCards.forEach((card, i) => {
@@ -134,7 +134,7 @@ export default function SprintBoard({ sprints, projectId, orgId }) {
     const sortedIssues = newOrderedData.sort((a, b) => a.order - b.order);
     setIssues(newOrderedData, sortedIssues);
 
-    updateIssueOrderFn(sortedIssues);
+    updateIssueOrderFn(sortedIssues, orgId);
   };
 
   if (issuesError) return <div>Error loading issues</div>;
@@ -189,15 +189,18 @@ export default function SprintBoard({ sprints, projectId, orgId }) {
                           >
                             <IssueCard
                               issue={issue}
-                              onDelete={() => fetchIssues(currentSprint.id)}
+                              onDelete={() =>
+                                fetchIssues(currentSprint.id, orgId)
+                              }
                               onUpdate={(updated) =>
                                 setIssues((issues) =>
                                   issues.map((issue) => {
                                     if (issue.id === updated.id) return updated;
                                     return issue;
-                                  })
+                                  }),
                                 )
                               }
+                              orgId={orgId}
                             />
                           </div>
                         )}

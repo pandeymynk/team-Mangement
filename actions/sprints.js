@@ -3,10 +3,11 @@
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 
-export async function createSprint(projectId, data) {
+export async function createSprint(projectId, data, orgIdOverride) {
   const { userId, orgId } = auth();
+  const activeOrgId = orgIdOverride || orgId;
 
-  if (!userId || !orgId) {
+  if (!userId || !activeOrgId) {
     throw new Error("Unauthorized");
   }
 
@@ -15,7 +16,7 @@ export async function createSprint(projectId, data) {
     include: { sprints: { orderBy: { createdAt: "desc" } } },
   });
 
-  if (!project || project.organizationId !== orgId) {
+  if (!project || project.organizationId !== activeOrgId) {
     throw new Error("Project not found");
   }
 

@@ -27,6 +27,7 @@ export default function SprintCreationForm({
   projectKey,
   projectId,
   sprintKey,
+  orgId,
 }) {
   const [showForm, setShowForm] = useState(false);
   const [dateRange, setDateRange] = useState({
@@ -53,11 +54,15 @@ export default function SprintCreationForm({
   });
 
   const onSubmit = async (data) => {
-    await createSprintFn(projectId, {
-      ...data,
-      startDate: dateRange.from,
-      endDate: dateRange.to,
-    });
+    await createSprintFn(
+      projectId,
+      {
+        ...data,
+        startDate: dateRange.from,
+        endDate: dateRange.to,
+      },
+      orgId,
+    );
     setShowForm(false);
     router.refresh(); // Refresh the page to show updated data
   };

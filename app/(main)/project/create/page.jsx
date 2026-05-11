@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,8 @@ import OrgSwitcher from "@/components/org-switcher";
 
 export default function CreateProjectPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const orgIdParam = searchParams.get("orgId");
   const { isLoaded: isOrgLoaded, membership } = useOrganization();
   const { isLoaded: isUserLoaded } = useUser();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -42,23 +44,26 @@ export default function CreateProjectPage() {
   } = useFetch(createProject);
 
   const onSubmit = async (data) => {
-    if (!isAdmin) {
+    if (!isAdmin && !orgIdParam) {
       alert("Only organization admins can create projects");
       return;
     }
 
-    createProjectFn(data);
+    await createProjectFn(data, orgIdParam);
   };
 
   useEffect(() => {
-    if (project) router.push(`/project/${project.id}`);
-  }, [loading]);
+    if (project) {
+      const nextOrgId = orgIdParam || project.organizationId;
+      router.push(`/project/${project.id}?orgId=${nextOrgId}`);
+    }
+  }, [project, router, orgIdParam]);
 
   if (!isOrgLoaded || !isUserLoaded) {
     return null;
   }
 
-  if (!isAdmin) {
+  if (!isAdmin && !orgIdParam) {
     return (
       <div className="flex flex-col gap-2 items-center">
         <span className="text-2xl gradient-title">

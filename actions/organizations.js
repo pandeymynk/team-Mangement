@@ -33,7 +33,7 @@ export async function getOrganization(slug) {
     });
 
   const userMembership = membership.find(
-    (member) => member.publicUserData.userId === userId
+    (member) => member.publicUserData.userId === userId,
   );
 
   // If user is not a member, return null
@@ -66,9 +66,7 @@ export async function getProjects(orgId) {
   return projects;
 }
 
-export async function getUserIssues(userId) {
-  const { orgId } = auth();
-
+export async function getUserIssues(userId, orgId) {
   if (!userId || !orgId) {
     throw new Error("No user id or organization id found");
   }
@@ -119,7 +117,7 @@ export async function getOrganizationUsers(orgId) {
     });
 
   const userIds = organizationMemberships.data.map(
-    (membership) => membership.publicUserData.userId
+    (membership) => membership.publicUserData.userId,
   );
 
   const users = await db.user.findMany({

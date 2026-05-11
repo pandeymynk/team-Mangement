@@ -3,9 +3,9 @@ import { notFound } from "next/navigation";
 import SprintCreationForm from "../_components/create-sprint";
 import SprintBoard from "../_components/sprint-board";
 
-export default async function ProjectPage({ params }) {
+export default async function ProjectPage({ params, searchParams }) {
   const { projectId } = params;
-  const project = await getProject(projectId);
+  const project = await getProject(projectId, searchParams?.orgId);
 
   if (!project) {
     notFound();
@@ -18,13 +18,14 @@ export default async function ProjectPage({ params }) {
         projectId={projectId}
         projectKey={project.key}
         sprintKey={project.sprints?.length + 1}
+        orgId={searchParams?.orgId || project.organizationId}
       />
 
       {project.sprints.length > 0 ? (
         <SprintBoard
           sprints={project.sprints}
           projectId={projectId}
-          orgId={project.organizationId}
+          orgId={searchParams?.orgId || project.organizationId}
         />
       ) : (
         <div>Create a Sprint from button above</div>

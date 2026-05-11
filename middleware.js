@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 const isProtectedRoute = createRouteMatcher([
   "/onboarding(.*)",
-  "/organisation(.*)",
+  "/organization(.*)",
   "/project(.*)",
   "/issue(.*)",
   "/sprint(.*)",
@@ -18,6 +18,8 @@ export default clerkMiddleware((auth, req) => {
     auth().userId &&
     !auth().orgId &&
     req.nextUrl.pathname !== "/onboarding" &&
+    !req.nextUrl.pathname.startsWith("/organization") &&
+    !req.nextUrl.pathname.startsWith("/project") &&
     req.nextUrl.pathname !== "/"
   ) {
     return NextResponse.redirect(new URL("/onboarding", req.url));

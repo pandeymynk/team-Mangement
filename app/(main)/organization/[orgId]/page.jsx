@@ -32,7 +32,7 @@ export default async function OrganizationPage({ params }) {
         <ProjectList orgId={organization.id} />
       </div>
       <div className="mt-8">
-        <UserIssues userId={userId} />
+        <UserIssues userId={userId} orgId={organization.id} />
       </div>
     </div>
   );

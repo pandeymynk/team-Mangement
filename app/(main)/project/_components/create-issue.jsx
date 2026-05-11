@@ -69,11 +69,15 @@ export default function IssueCreationDrawer({
   }, [isOpen, orgId]);
 
   const onSubmit = async (data) => {
-    await createIssueFn(projectId, {
-      ...data,
-      status,
-      sprintId,
-    });
+    await createIssueFn(
+      projectId,
+      {
+        ...data,
+        status,
+        sprintId,
+      },
+      orgId,
+    );
   };
 
   useEffect(() => {

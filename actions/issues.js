@@ -3,10 +3,11 @@
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 
-export async function getIssuesForSprint(sprintId) {
+export async function getIssuesForSprint(sprintId, orgIdOverride) {
   const { userId, orgId } = auth();
+  const activeOrgId = orgIdOverride || orgId;
 
-  if (!userId || !orgId) {
+  if (!userId || !activeOrgId) {
     throw new Error("Unauthorized");
   }
 
@@ -22,10 +23,11 @@ export async function getIssuesForSprint(sprintId) {
   return issues;
 }
 
-export async function createIssue(projectId, data) {
+export async function createIssue(projectId, data, orgIdOverride) {
   const { userId, orgId } = auth();
+  const activeOrgId = orgIdOverride || orgId;
 
-  if (!userId || !orgId) {
+  if (!userId || !activeOrgId) {
     throw new Error("Unauthorized");
   }
 
@@ -59,10 +61,11 @@ export async function createIssue(projectId, data) {
   return issue;
 }
 
-export async function updateIssueOrder(updatedIssues) {
+export async function updateIssueOrder(updatedIssues, orgIdOverride) {
   const { userId, orgId } = auth();
+  const activeOrgId = orgIdOverride || orgId;
 
-  if (!userId || !orgId) {
+  if (!userId || !activeOrgId) {
     throw new Error("Unauthorized");
   }
 
@@ -83,10 +86,11 @@ export async function updateIssueOrder(updatedIssues) {
   return { success: true };
 }
 
-export async function deleteIssue(issueId) {
+export async function deleteIssue(issueId, orgIdOverride) {
   const { userId, orgId } = auth();
+  const activeOrgId = orgIdOverride || orgId;
 
-  if (!userId || !orgId) {
+  if (!userId || !activeOrgId) {
     throw new Error("Unauthorized");
   }
 
@@ -107,10 +111,7 @@ export async function deleteIssue(issueId) {
     throw new Error("Issue not found");
   }
 
-  if (
-    issue.reporterId !== user.id &&
-    !issue.project.adminIds.includes(user.id)
-  ) {
+  if (issue.reporterId !== user.id) {
     throw new Error("You don't have permission to delete this issue");
   }
 
@@ -119,10 +120,11 @@ export async function deleteIssue(issueId) {
   return { success: true };
 }
 
-export async function updateIssue(issueId, data) {
+export async function updateIssue(issueId, data, orgIdOverride) {
   const { userId, orgId } = auth();
+  const activeOrgId = orgIdOverride || orgId;
 
-  if (!userId || !orgId) {
+  if (!userId || !activeOrgId) {
     throw new Error("Unauthorized");
   }
 
@@ -136,7 +138,7 @@ export async function updateIssue(issueId, data) {
       throw new Error("Issue not found");
     }
 
-    if (issue.project.organizationId !== orgId) {
+    if (issue.project.organizationId !== activeOrgId) {
       throw new Error("Unauthorized");
     }
 

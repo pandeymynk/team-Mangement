@@ -1,20 +1,19 @@
-import { Suspense } from "react";
 import { getUserIssues } from "@/actions/organizations";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import IssueCard from "@/components/issue-card";
 
-export default async function UserIssues({ userId }) {
-  const issues = await getUserIssues(userId);
+export default async function UserIssues({ userId, orgId }) {
+  const issues = await getUserIssues(userId, orgId);
 
   if (issues.length === 0) {
     return null;
   }
 
   const assignedIssues = issues.filter(
-    (issue) => issue.assignee.clerkUserId === userId
+    (issue) => issue.assignee.clerkUserId === userId,
   );
   const reportedIssues = issues.filter(
-    (issue) => issue.reporter.clerkUserId === userId
+    (issue) => issue.reporter.clerkUserId === userId,
   );
 
   return (
@@ -27,14 +26,10 @@ export default async function UserIssues({ userId }) {
           <TabsTrigger value="reported">Reported by You</TabsTrigger>
         </TabsList>
         <TabsContent value="assigned">
-          <Suspense fallback={<div>Loading...</div>}>
-            <IssueGrid issues={assignedIssues} />
-          </Suspense>
+          <IssueGrid issues={assignedIssues} />
         </TabsContent>
         <TabsContent value="reported">
-          <Suspense fallback={<div>Loading...</div>}>
-            <IssueGrid issues={reportedIssues} />
-          </Suspense>
+          <IssueGrid issues={reportedIssues} />
         </TabsContent>
       </Tabs>
     </>

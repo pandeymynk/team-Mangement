@@ -13,7 +13,7 @@ export default async function ProjectList({ orgId }) {
         No projects found.{" "}
         <Link
           className="underline underline-offset-2 text-blue-200"
-          href="/project/create"
+          href={`/project/create?orgId=${orgId}`}
         >
           Create New.
         </Link>
@@ -34,7 +34,7 @@ export default async function ProjectList({ orgId }) {
           <CardContent>
             <p className="text-sm text-gray-500 mb-4">{project.description}</p>
             <Link
-              href={`/project/${project.id}`}
+              href={`/project/${project.id}?orgId=${orgId}`}
               className="text-blue-500 hover:underline"
             >
               View Project

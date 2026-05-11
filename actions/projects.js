@@ -3,25 +3,26 @@
 import { db } from "@/lib/prisma";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 
-export async function createProject(data) {
+export async function createProject(data, orgIdOverride) {
   const { userId, orgId } = auth();
+  const activeOrgId = orgIdOverride || orgId;
 
   if (!userId) {
     throw new Error("Unauthorized");
   }
 
-  if (!orgId) {
+  if (!activeOrgId) {
     throw new Error("No Organization Selected");
   }
 
   // Check if the user is an admin of the organization
   const { data: membershipList } =
     await clerkClient().organizations.getOrganizationMembershipList({
-      organizationId: orgId,
+      organizationId: activeOrgId,
     });
 
   const userMembership = membershipList.find(
-    (membership) => membership.publicUserData.userId === userId
+    (membership) => membership.publicUserData.userId === userId,
   );
 
   if (!userMembership || userMembership.role !== "org:admin") {
@@ -34,7 +35,7 @@ export async function createProject(data) {
         name: data.name,
         key: data.key,
         description: data.description,
-        organizationId: orgId,
+        organizationId: activeOrgId,
       },
     });
 
@@ -44,10 +45,11 @@ export async function createProject(data) {
   }
 }
 
-export async function getProject(projectId) {
+export async function getProject(projectId, orgIdOverride) {
   const { userId, orgId } = auth();
+  const activeOrgId = orgIdOverride || orgId;
 
-  if (!userId || !orgId) {
+  if (!userId || !activeOrgId) {
     throw new Error("Unauthorized");
   }
 
@@ -75,7 +77,7 @@ export async function getProject(projectId) {
   }
 
   // Verify project belongs to the organization
-  if (project.organizationId !== orgId) {
+  if (project.organizationId !== activeOrgId) {
     return null;
   }
 
@@ -99,7 +101,7 @@ export async function deleteProject(projectId) {
 
   if (!project || project.organizationId !== orgId) {
     throw new Error(
-      "Project not found or you don't have permission to delete it"
+      "Project not found or you don't have permission to delete it",
     );
   }
 

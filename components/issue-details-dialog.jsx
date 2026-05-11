@@ -35,6 +35,7 @@ export default function IssueDetailsDialog({
   onDelete = () => {},
   onUpdate = () => {},
   borderCol = "",
+  orgId,
 }) {
   const [status, setStatus] = useState(issue.status);
   const [priority, setPriority] = useState(issue.priority);
@@ -59,18 +60,18 @@ export default function IssueDetailsDialog({
 
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this issue?")) {
-      deleteIssueFn(issue.id);
+      deleteIssueFn(issue.id, orgId);
     }
   };
 
   const handleStatusChange = async (newStatus) => {
     setStatus(newStatus);
-    updateIssueFn(issue.id, { status: newStatus, priority });
+    updateIssueFn(issue.id, { status: newStatus, priority }, orgId);
   };
 
   const handlePriorityChange = async (newPriority) => {
     setPriority(newPriority);
-    updateIssueFn(issue.id, { status, priority: newPriority });
+    updateIssueFn(issue.id, { status, priority: newPriority }, orgId);
   };
 
   useEffect(() => {
@@ -84,7 +85,7 @@ export default function IssueDetailsDialog({
   }, [deleted, updated, deleteLoading, updateLoading]);
 
   const canChange =
-    user.id === issue.reporter.clerkUserId || membership.role === "org:admin";
+    user.id === issue.reporter.clerkUserId || membership?.role === "org:admin";
 
   const handleGoToProject = () => {
     router.push(`/project/${issue.projectId}?sprint=${issue.sprintId}`);
