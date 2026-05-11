@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { auth } from "@clerk/nextjs/server";
 import {
   ChevronRight,
   Layout,
@@ -17,6 +18,7 @@ import {
 } from "@/components/ui/accordion";
 import CompanyCarousel from "@/components/company-carousel";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
 const faqs = [
   {
@@ -73,6 +75,12 @@ const features = [
 ];
 
 export default function Home() {
+  const { userId, orgId } = auth();
+
+  if (userId) {
+    redirect(orgId ? `/organization/${orgId}` : "/onboarding");
+  }
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
